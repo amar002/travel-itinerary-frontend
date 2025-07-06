@@ -29,7 +29,7 @@ max_drive_files = st.number_input("Maximum Drive Files", min_value=1, max_value=
 
 if st.button("🚀 Fetch Itinerary"):
     with st.spinner("Fetching your itinerary..."):
-        url = "https://travel-itinerary-ai.onrender.com"  # ⬅️ replace with your real backend URL!
+        url = "url = "https://travel-itinerary-ai.onrender.com/trips/build"  # ⬅️ replace with your real backend URL!
 
         payload = {
             "after_date": after_date.strftime("%Y-%m-%d"),
