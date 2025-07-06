@@ -24,8 +24,8 @@ with col2:
         value=datetime.today()
     )
 
-max_emails = st.number_input("Maximum Emails", min_value=1, max_value=20, value=5)
-max_drive_files = st.number_input("Maximum Drive Files", min_value=1, max_value=20, value=5)
+max_emails = st.number_input("Maximum Emails", min_value=0, max_value=20, value=5)
+#max_drive_files = st.number_input("Maximum Drive Files", min_value=1, max_value=20, value=5)
 
 if st.button("🚀 Fetch Itinerary"):
     with st.spinner("Fetching your itinerary..."):
@@ -35,7 +35,6 @@ if st.button("🚀 Fetch Itinerary"):
             "after_date": after_date.strftime("%Y-%m-%d"),
             "before_date": before_date.strftime("%Y-%m-%d"),
             "max_emails": max_emails,
-            "max_drive_files": max_drive_files
         }
 
         try:
