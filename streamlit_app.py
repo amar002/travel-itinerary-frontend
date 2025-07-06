@@ -1,54 +1,51 @@
 import streamlit as st
 import requests
-from datetime import datetime, timedelta
+import os
 
-st.set_page_config(page_title="Travel Itinerary AI", page_icon="🧳", layout="centered")
+st.set_page_config(page_title="🧳 Travel Itinerary AI", page_icon="🧳")
+
+# Your backend URL
+BACKEND_URL = os.getenv("BACKEND_URL", "https://travel-itinerary-ai.onrender.com")
 
 st.title("🧳 Travel Itinerary AI")
-st.markdown("Generate your travel itinerary from Gmail & Drive bookings with AI.")
+st.write("Generate your travel itinerary from Gmail bookings powered by AI.")
 
-st.header("📋 Enter your trip preferences:")
+st.header("📅 Enter your trip preferences:")
 
-# Inputs
 col1, col2 = st.columns(2)
-
 with col1:
-    after_date = st.date_input(
-        "Start Date",
-        value=datetime.today() - timedelta(days=30)
-    )
-
+    start_date = st.date_input("Start Date")
 with col2:
-    before_date = st.date_input(
-        "End Date",
-        value=datetime.today()
-    )
+    end_date = st.date_input("End Date")
 
-max_emails = st.number_input("Maximum Emails", min_value=0, max_value=20, value=5)
-#max_drive_files = st.number_input("Maximum Drive Files", min_value=1, max_value=20, value=5)
+max_emails = st.number_input("Maximum Emails", min_value=0, value=5)
+max_drive_files = st.number_input("Maximum Drive Files", min_value=0, value=0)
 
 if st.button("🚀 Fetch Itinerary"):
-    with st.spinner("Fetching your itinerary..."):
-        url = "https://travel-itinerary-ai.onrender.com/trips/build"  # ⬅️ replace with your real backend URL!
-
+    if not start_date or not end_date:
+        st.error("Please select both start and end dates.")
+    else:
         payload = {
-            "after_date": after_date.strftime("%Y-%m-%d"),
-            "before_date": before_date.strftime("%Y-%m-%d"),
+            "after_date": start_date.strftime("%Y-%m-%d"),
+            "before_date": end_date.strftime("%Y-%m-%d"),
             "max_emails": max_emails,
+            "max_drive_files": max_drive_files,
         }
 
+        st.write("Sending payload:", payload)
+
         try:
-            response = requests.post(url, json=payload, timeout=60)
-            response.raise_for_status()
-            trip = response.json()
-
-            st.success("🎉 Itinerary generated!")
-
-            st.header(f"🗺️ {trip['name']}")
-            st.subheader(f"{trip['start_date']} → {trip['end_date']}")
-
-            for item in trip["itinerary"]:
-                st.write(f"**Day {item['day']}**: {item['activity']}")
+            response = requests.post(
+                f"{BACKEND_URL}/trips/build",
+                json=payload,
+                timeout=60
+            )
+            if response.status_code == 200:
+                itinerary = response.json().get("itinerary", "No itinerary found.")
+                st.success("✅ Itinerary generated successfully!")
+                st.text_area("📋 Your Itinerary", itinerary, height=300)
+            else:
+                st.error(f"❌ Error {response.status_code}: {response.text}")
 
         except Exception as e:
-            st.error(f"❌ Failed to fetch itinerary: {e}")
+            st.error(f"❌ Request failed: {e}")
