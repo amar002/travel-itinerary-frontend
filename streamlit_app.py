@@ -17,7 +17,7 @@ if "selected_label" not in st.session_state:
 
 if st.button("🔄 Fetch Gmail Labels"):
     try:
-        res = requests.get(f"{BACKEND_URL}/labels", timeout=60)
+        res = requests.get(f"https://travel-itinerary-ai.onrender.com/trips/labels", timeout=60)
         res.raise_for_status()
         st.session_state.labels = res.json().get("labels", [])
         if st.session_state.labels:
